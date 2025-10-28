@@ -1,11 +1,9 @@
 # app.py
-# Generative Abstract Poster with Full CSV Palette
-import os
+# Generative Abstract Poster with Full Palette
 import random
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 import streamlit as st
 
 # --- Streamlit UI ---
@@ -25,42 +23,13 @@ radius_max = st.sidebar.slider("Maximum Radius", 0.05, 0.5, 0.45, 0.01)
 
 generate = st.sidebar.button("🎲 Generate Poster")
 
-# --- Palette CSV ---
-PALETTE_FILE = "palette.csv"
-
-# Initialize palette.csv with your colors if not exists
-if not os.path.exists(PALETTE_FILE):
-    df_init = pd.DataFrame([
-        {"Name":"sky","R":0.4,"G":0.7,"B":1.0},
-        {"Name":"sun","R":1.0,"G":0.8,"B":0.2},
-        {"Name":"forest","R":0.2,"G":0.6,"B":0.3},
-        {"Name":"ocean","R":0.1,"G":0.4,"B":0.75},
-        {"Name":"sand","R":0.9,"G":0.75,"B":0.5},
-        {"Name":"cloud","R":0.95,"G":0.95,"B":0.95},
-        {"Name":"fire","R":0.9,"G":0.3,"B":0.1},
-        {"Name":"ruby","R":0.8,"G":0.05,"B":0.2},
-        {"Name":"gold","R":1.0,"G":0.85,"B":0.0},
-        {"Name":"twilight","R":0.3,"G":0.15,"B":0.5},
-        {"Name":"grass","R":0.4,"G":0.85,"B":0.15},
-        {"Name":"brick","R":0.65,"G":0.2,"B":0.15},
-        {"Name":"metal","R":0.6,"G":0.65,"B":0.7},
-        {"Name":"grape","R":0.5,"G":0.2,"B":0.7},
-        {"Name":"dawn","R":0.95,"G":0.6,"B":0.5},
-        {"Name":"snow","R":1.0,"G":1.0,"B":1.0},
-        {"Name":"coal","R":0.1,"G":0.1,"B":0.1},
-        {"Name":"mint","R":0.6,"G":0.9,"B":0.8},
-        {"Name":"berry","R":0.8,"G":0.3,"B":0.5},
-        {"Name":"shadow","R":0.3,"G":0.3,"B":0.35}
-    ])
-    df_init.to_csv(PALETTE_FILE, index=False)
-
-def read_palette():
-    return pd.read_csv(PALETTE_FILE)
-
-def get_palette_from_csv(k=6):
-    df = read_palette()
-    colors = df.sample(n=min(k, len(df)))
-    return [(row.R, row.G, row.B) for idx, row in colors.iterrows()]
+# --- Full Palette ---
+FULL_PALETTE = [
+    (0.4,0.7,1.0), (1.0,0.8,0.2), (0.2,0.6,0.3), (0.1,0.4,0.75), (0.9,0.75,0.5),
+    (0.95,0.95,0.95), (0.9,0.3,0.1), (0.8,0.05,0.2), (1.0,0.85,0.0), (0.3,0.15,0.5),
+    (0.4,0.85,0.15), (0.65,0.2,0.15), (0.6,0.65,0.7), (0.5,0.2,0.7), (0.95,0.6,0.5),
+    (1.0,1.0,1.0), (0.1,0.1,0.1), (0.6,0.9,0.8), (0.8,0.3,0.5), (0.3,0.3,0.35)
+]
 
 # --- Blob Function ---
 def blob(center=(0.5, 0.5), r=0.3, points=200, wobble=0.15):
@@ -78,12 +47,11 @@ if generate or random_seed >= 0:
     plt.axis('off')
     plt.gca().set_facecolor((0.98, 0.98, 0.97))
 
-    palette = get_palette_from_csv(k=6)
     for i in range(n_layers):
         cx, cy = random.random(), random.random()
         rr = random.uniform(radius_min, radius_max)
         x, y = blob(center=(cx, cy), r=rr, wobble=random.uniform(wobble_min, wobble_max))
-        color = random.choice(palette)
+        color = random.choice(FULL_PALETTE)
         alpha = random.uniform(0.25, 0.6)
         plt.fill(x, y, color=color, alpha=alpha, edgecolor=(0,0,0,0))
 
